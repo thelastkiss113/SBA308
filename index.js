@@ -100,7 +100,7 @@ const CourseInfo = {
   
   console.log(result);
 
-  //Console Output : 
+  //Console Output : js:101
 //   [
 //     {
 //       id: 125,
@@ -116,7 +116,17 @@ const CourseInfo = {
 //     }
 //   ]
   
+//Checklist #1 
+//*1. Match AssignmentGroup to CourseInfo.id = completed: function assignmentGroupMatch
+//*2. Throw Error : completed: try/catch = Test function
+// 3. Account for errors in data (points posssible=0? Value is a # instead of string?)
+// 4. Use try/catch and other logic to handle errors
+// 5. Assignment not due yet then do not include it in results or average. (create a loop) If learner's assignment is late then deduct 10% in points.
+// 6. Create a function named getLearnerData() that accepts these values as parameters in order listed: (CourseInfo,AssignmentGroup,[LearnerSubmission]), and returns formatted result which should be an array of objects as desribed above.
+// 7. Use helper functions as you see fit.  Helper function = a function within another function
 
+
+// #1 & #2
 // Function: make sure AssignmentGroup.course_id matches CourseInfo.id ==> if it doesn't throw error
 function assignmentGroupMatch(course, AssignmentGroup) {
 if (AssignmentGroup.course_id !== course.id) {
@@ -132,12 +142,33 @@ try {
   } catch (error) {
     console.error(error.message);
   }
-  //console Output : Assignment group valid.
-
-// Validate AssignmentInfo
+  //console Output : Assignment group valid. js:125
 
 
-//Checklist:
+
+// # 3. create loop to validate AssignmentGroup.assignments points = put in function
+
+function searchAssignments(assignments) {
+    const validate = [];
+    let i = 0;
+
+    while (i < assignments.length) {
+        const assigmnet = assignments[i];
+
+        if (assignments.points_possible <=0) {
+            throw new Error(`Assignment not valid: ${assignment.id}`);
+        }
+
+        //
+    }
+}
+
+
+
+
+
+
+//Checklist #2
 // Declare variables properly using let and const where appropriate.
 // Use operators to perform calculations on variables and literals.
 // Use strings, numbers, and Boolean values cached within variables.
