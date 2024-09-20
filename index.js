@@ -100,3 +100,8 @@ const CourseInfo = {
   
   console.log(result);
   
+
+// Function: make sure AssignmentGroup.course_id matches CourseInfo.id ==> if it doesn't throw error
+  if (AssignmentGroup.course_id) !== CourseInfo.id): {
+    throw error "Assignment group does not match course"
+  }
