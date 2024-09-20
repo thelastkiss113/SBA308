@@ -146,22 +146,24 @@ try {
 
 
 
-// # 3. create loop to validate AssignmentGroup.assignments points = put in function
+// # 3. create loop to validate AssignmentGroup.assignments points = put it into function
 
 function searchAssignments(assignments) {
     const validate = [];
     let i = 0;
 
     while (i < assignments.length) {
-        const assigmnet = assignments[i];
+        const assignment = assignments[i];
 
         if (assignments.points_possible <=0) {
             throw new Error(`Assignment not valid: ${assignment.id}`);
         }
-
-        //
+i++;
+    
     }
+    return assignments;
 }
+searchAssignments();
 
 
 
