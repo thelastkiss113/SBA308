@@ -151,18 +151,45 @@ try {
       console.error(error.message);
       return;
     }
-  }
-  const results = {}; 
+  const results = {};
+ 
 
 
 // # 3. create loop to validate AssignmentGroup.assignments points = put it into function
+ submissions.forEach(submission => {
+  const learnerId = submission.learner_id;
+  const assignmentId = submission.assignment_id;
+  const assignment = assignmentGroup.assignments.find(a => a.id === assignmentId);
+
+  if (!assignment) {
+    throw new Error(`Assignment with id ${assignmentId} not found`);
+  }
+
+  const dueDate = new Date(assignment.due_at);
+  const submissionDate = new Date(submission.submission.submitted_at);
+
+  console.log(`Analyzing submission for learner ${learnerId}, assignment ${assignmentId}`);
+
+  // #4 If assignment not due yet = do not include it in the results or average.
+  if (dueDate > new Date()) return;
+
+  // Learner's data
+  console.log("====== Learner Results =====")
+  if (!results[learnerId]) {
+    results[learnerId] = { id: learnerId, avg: 0, totalPoints: 0, totalPossible: 0 };
+  }
+
+  // #4 Late 10% submission penalty 
+  console.log("Late Assignments:");
+
+  let score = submission.submission.score;
+    if (submissionDate > dueDate) {
+      console.log(`Assignment ${assignmentId} is late! -10%`);
+      score -= assignment.points_possible * 0.1; 
+    }
 
 
-
-
-
-
-//Checklist #2
+// Checklist #2
 // Declare variables properly using let and const where appropriate.
 // Use operators to perform calculations on variables and literals.
 // Use strings, numbers, and Boolean values cached within variables.
@@ -175,5 +202,5 @@ try {
 // Use functions to handle repeated tasks.
 // Program outputs processed data as described above. Partial credit will be earned depending on the level of adherence to the described behavior.
 // Ensure that the program runs without errors (comment out things that do not work, and explain your blockers - you can still receive partial credit).
-// Commit frequently to the git repository.
-// Include a README file that contains a description of your application.
+// Commit frequently to the git repository
+// Include a README file that contains a description of your application
