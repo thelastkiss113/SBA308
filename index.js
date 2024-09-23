@@ -156,7 +156,7 @@ function applyLatePenalty(submissionDate, dueDate, score, pointsPossible) {
 function getLearnerData(course, assignmentGroup, submissions) {
   const results = {};
 
-  //Try / Catch #7
+  //Try / Catch #4
   try {
     assignmentGroupMatch(course, assignmentGroup);
   } catch (error) {
@@ -211,7 +211,7 @@ function getLearnerData(course, assignmentGroup, submissions) {
   });
 }
 
-// #6 Return array #4 Try-Catch
+// #6 Return array & #4 Try-Catch
 try {
   const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
   console.log("Return result:", result);
