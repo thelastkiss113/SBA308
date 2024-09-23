@@ -117,77 +117,107 @@ const CourseInfo = {
 //   ]
   
 //Checklist #1 
-//*1. Match AssignmentGroup to CourseInfo.id = completed: function assignmentGroupMatch
+//*1. Match AssignmentGroup to CourseInfo.id 
 //*2. Throw Error : completed: try/catch = Test function
-// 3. Account for errors in data (points posssible=0? Value is a # instead of string?)
-// 4. Use try/catch and other logic to handle errors
-// 5. Assignment not due yet then do not include it in results or average. (create a loop) If learner's assignment is late then deduct 10% in points.
-// 6. Create a function named getLearnerData() that accepts these values as parameters in order listed: (CourseInfo,AssignmentGroup,[LearnerSubmission]), and returns formatted result which should be an array of objects as desribed above.
-// 7. Use helper functions as you see fit.  Helper function = a function within another function
+// *3. Account for errors in data (points posssible=0? Value is a # instead of string?)
+// *4. Use try/catch and other logic to handle errors
+// *5. Assignment not due yet then do not include it in results or average. (create a loop) If learner's assignment is late then deduct 10% in points.
+// *6. Create a function named getLearnerData() that accepts these values as parameters in order listed: (CourseInfo,AssignmentGroup,[LearnerSubmission]), and returns formatted result which should be an array of objects as desribed above.
+// *7. Use helper functions as you see fit.  Helper function = a function within another function
 
 
 // #1 & #2
-// Function: make sure AssignmentGroup.course_id matches CourseInfo.id ==> if it doesn't throw error
-function assignmentGroupMatch(course, AssignmentGroup) {
-if (AssignmentGroup.course_id !== course.id) {
-    throw new Error("Assignment group does not match course");
+// Function: make sure AssignmentGroup.course_id matches CourseInfo.id ==> if it doesn't throw error + helper function
+function assignmentGroupMatch(course, assignmentGroup) {
+  if (assignmentGroup.course_id !== course.id) {
+    throw new Error("Assignment group does not match Course ID");
   } else {
-    console.log("Assignment group valid");
+    console.log("Assignment group valid.");
   }
 }
 
-// Test the function
-try {
-    assignmentGroupMatch(CourseInfo, AssignmentGroup); 
-  } catch (error) {
-    console.error(error.message);
-  }
-  //console Output : Assignment group valid. js:125
-
-  function getLearnerData(course, assignmentGroup, submissions) {
-    try { assignmentGroupMatch(course, assignmentGroup);
-
-    } catch (error) {
-      console.error(error.message);
-      return;
-    }
-  const results = {};
- 
-
-
-// # 3. create loop to validate AssignmentGroup.assignments points = put it into function
- submissions.forEach(submission => {
-  const learnerId = submission.learner_id;
-  const assignmentId = submission.assignment_id;
-  const assignment = assignmentGroup.assignments.find(a => a.id === assignmentId);
-
-  if (!assignment) {
-    throw new Error(`Assignment with id ${assignmentId} not found`);
-  }
-
-  const dueDate = new Date(assignment.due_at);
-  const submissionDate = new Date(submission.submission.submitted_at);
-
-  console.log(`Analyzing submission for learner ${learnerId}, assignment ${assignmentId}`);
-
-  // #4 If assignment not due yet = do not include it in the results or average.
-  if (dueDate > new Date()) return;
-
-  // Learner's data
-  console.log("====== Learner Results =====")
+// # 7 Helper function
+function LearnerData(results, learnerId) {
   if (!results[learnerId]) {
+    console.log(`Initializing data for learner ${learnerId}`);
     results[learnerId] = { id: learnerId, avg: 0, totalPoints: 0, totalPossible: 0 };
   }
+}
 
-  // #4 Late 10% submission penalty 
-  console.log("Late Assignments:");
+// #5 function to apply Late Penalty -10%
+function applyLatePenalty(submissionDate, dueDate, score, pointsPossible) {
+  if (submissionDate > dueDate) {
+    console.log(`Late submission detected! Deducting 10% penalty.`);
+    return score - pointsPossible * 0.1;
+  }
+  return score;
+}
 
-  let score = submission.submission.score;
-    if (submissionDate > dueDate) {
-      console.log(`Assignment ${assignmentId} is late! -10%`);
-      score -= assignment.points_possible * 0.1; 
+function getLearnerData(course, assignmentGroup, submissions) {
+  const results = {};
+
+  //Try / Catch #7
+  try {
+    assignmentGroupMatch(course, assignmentGroup);
+  } catch (error) {
+    console.error(error.message);
+    return;
+  }
+
+  // Process each submission
+  submissions.forEach(submission => {
+    const learnerId = submission.learner_id;
+    const assignmentId = submission.assignment_id;
+    const assignment = assignmentGroup.assignments.find(a => a.id === assignmentId);
+
+  // #3 throw error  
+    if (!assignment) {
+      throw new Error(`Assignment with id ${assignmentId} not found.`);
     }
 
+    const dueDate = new Date(assignment.due_at);
+    const submissionDate = new Date(submission.submission.submitted_at);
+
+    console.log(`Analyzing submission for learner ${learnerId}, assignment ${assignmentId}.`);
+
+    // #5.  Remove assignments not due yet
+    if (dueDate > new Date()) {
+      console.log(`Assignment ${assignmentId} is not due yet. Removing.`);
+      return;
+    }
+
+    // Show Learner Data
+    LearnerData(results, learnerId);
+
+    // #5 apply Late Penalty
+    let score = applyLatePenalty(submissionDate, dueDate, submission.submission.score, assignment.points_possible);
+
+    const percentage = score / assignment.points_possible;
+    const formattedPercentage = Math.round(percentage * 10000) / 100; // round to a percentage
+    console.log(`Learner ID: ${learnerId} - scored ${formattedPercentage}% on assignment ${assignmentId}.`);
+    results[learnerId][assignmentId] = percentage; // Calculate Score %
+
+    results[learnerId].totalPoints += score;
+    results[learnerId].totalPossible += assignment.points_possible;
+  });
+
+  // Average Calculation
+  return Object.values(results).map(learner => {
+    learner.avg = learner.totalPoints / learner.totalPossible;
+    const formattedAvg = Math.round(learner.avg * 10000) / 100; 
+    console.log(`Learner ID: ${learner.id} - has an average score = ${formattedAvg}%.`);
+    const { totalPoints, totalPossible, ...learnerWithoutTotals } = learner;
+    return learnerWithoutTotals;
+  });
+}
+
+// #6 Return array #4 Try-Catch
+try {
+  const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+  console.log("Return result:", result);
+} catch (error) {
+  console.error("Error!", error.message);
+}
 
 // Checklist #2
 // Declare variables properly using let and const where appropriate.
