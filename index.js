@@ -144,26 +144,18 @@ try {
   }
   //console Output : Assignment group valid. js:125
 
+  function getLearnerData(course, assignmentGroup, submissions) {
+    try { assignmentGroupMatch(course, assignmentGroup);
+
+    } catch (error) {
+      console.error(error.message);
+      return;
+    }
+  }
+  const results = {}; 
 
 
 // # 3. create loop to validate AssignmentGroup.assignments points = put it into function
-
-function searchAssignments(assignments) {
-    const validate = [];
-    let i = 0;
-
-    while (i < assignments.length) {
-        const assignment = assignments[i];
-
-        if (assignments.points_possible <=0) {
-            throw new Error(`Assignment not valid: ${assignment.id}`);
-        }
-i++;
-    
-    }
-    return assignments;
-}
-searchAssignments();
 
 
 
